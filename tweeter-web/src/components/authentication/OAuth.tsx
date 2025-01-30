@@ -34,7 +34,7 @@ const FieldButton = (props: Props) => {
     );
 }
 
-const AuthenticationFields = () => {
+const OAuth = () => {
     return (
         <div className="text-center mb-3">
             <FieldButton 
@@ -70,4 +70,4 @@ const AuthenticationFields = () => {
     );
 }
 
-export default AuthenticationFields;
+export default OAuth;

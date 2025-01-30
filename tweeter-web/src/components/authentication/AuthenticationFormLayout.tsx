@@ -1,4 +1,4 @@
-import AuthenticationFields from "./AuthenticationFields";
+import OAuth from "./OAuth";
 
 interface Props {
   headingText: string;
@@ -32,7 +32,7 @@ const AuthenticationFormLayout = (props: Props) => {
             <h1 className="h4 mb-3 fw-normal">Or</h1>
             <h1 className="h5 mb-3 fw-normal">{props.oAuthHeading}</h1>
 
-            <AuthenticationFields />
+            <OAuth />
 
             <div className="checkbox mb-3">
               <label>
