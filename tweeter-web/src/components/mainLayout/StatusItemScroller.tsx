@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { UserInfoContext } from "../userInfo/UserInfoProvider";
-import { AuthToken, FakeData, Status } from "tweeter-shared";
+import { AuthToken, Status } from "tweeter-shared";
 import { useState, useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import useToastListener from "../toaster/ToastListenerHook";
@@ -8,7 +8,17 @@ import StatusItem from "../statusItem/StatusItem";
 
 export const PAGE_SIZE = 10;
 
-const StoryScroller = () => {
+interface Props {
+    itemType: string;
+    loadMore: (
+        authToken: AuthToken,
+        userAlias: string,
+        pageSize: number,
+        lastItem: Status | null
+    ) => Promise<[Status[], boolean]>;
+}
+
+const StatusItemScroller = (props: Props) => {
   const { displayErrorMessage } = useToastListener();
   const [items, setItems] = useState<Status[]>([]);
   const [newItems, setNewItems] = useState<Status[]>([]);
@@ -51,7 +61,7 @@ const StoryScroller = () => {
 
   const loadMoreItems = async () => {
     try {
-      const [newItems, hasMore] = await loadMoreStoryItems(
+      const [newItems, hasMore] = await props.loadMore(
         authToken!,
         displayedUser!.alias,
         PAGE_SIZE,
@@ -64,19 +74,9 @@ const StoryScroller = () => {
       setChangedDisplayedUser(false)
     } catch (error) {
       displayErrorMessage(
-        `Failed to load story items because of exception: ${error}`
+        `Failed to load ${props.itemType} items because of exception: ${error}`
       );
     }
-  };
-
-  const loadMoreStoryItems = async (
-    authToken: AuthToken,
-    userAlias: string,
-    pageSize: number,
-    lastItem: Status | null
-  ): Promise<[Status[], boolean]> => {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.getPageOfStatuses(lastItem, pageSize);
   };
 
   return (
@@ -94,37 +94,6 @@ const StoryScroller = () => {
             className="row mb-3 mx-0 px-0 border rounded bg-white"
           >
             <StatusItem status={item} />
-            {/* <div className="col bg-light mx-0 px-0">
-              <div className="container px-0">
-                <div className="row mx-0 px-0">
-                  <div className="col-auto p-3">
-                    <img
-                      src={item.user.imageUrl}
-                      className="img-fluid"
-                      width="80"
-                      alt="Posting user"
-                    />
-                  </div>
-                  <div className="col">
-                    <h2>
-                      <b>
-                        {item.user.firstName} {item.user.lastName}
-                      </b>{" "}
-                      -{" "}
-                      <Link
-                        to={item.user.alias}
-                        onClick={(event) => navigateToUser(event)}
-                      >
-                        {item.user.alias}
-                      </Link>
-                    </h2>
-                    {item.formattedDate}
-                    <br />
-                    <Post status={item} />
-                  </div>
-                </div>
-              </div>
-            </div> */}
           </div>
         ))}
       </InfiniteScroll>
@@ -132,4 +101,4 @@ const StoryScroller = () => {
   );
 };
 
-export default StoryScroller;
+export default StatusItemScroller;
