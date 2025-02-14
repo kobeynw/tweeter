@@ -1,52 +1,32 @@
-import { AuthToken, FakeData, User } from "tweeter-shared";
 import useToastListener from "../toaster/ToastListenerHook";
 import useUserInfo from "../userInfo/UserInfoHook";
+import {
+  UserNavigationPresenter,
+  UserNavigationView,
+} from "../../presenters/UserNavigationPresenter";
+import { useState } from "react";
 
 interface userNavigation {
-    navigateToItem: (event: React.MouseEvent) => Promise<void>;
+  navigateToItem: (event: React.MouseEvent) => Promise<void>;
 }
 
 const useUserNavigation = (): userNavigation => {
-    const { displayErrorMessage } = useToastListener();
-    const { setDisplayedUser, currentUser, authToken } =
-        useUserInfo();
+  const { displayErrorMessage } = useToastListener();
+  const { setDisplayedUser, currentUser, authToken } = useUserInfo();
 
-    const navigateToUser = async (event: React.MouseEvent): Promise<void> => {
-        event.preventDefault();
-    
-        try {
-            const alias = extractAlias(event.target.toString());
-    
-            const user = await getUser(authToken!, alias);
-    
-            if (!!user) {
-                if (currentUser!.equals(user)) {
-                    setDisplayedUser(currentUser!);
-                } else {
-                    setDisplayedUser(user);
-                }
-            }
-        } catch (error) {
-            displayErrorMessage(`Failed to get user because of exception: ${error}`);
-        }
-    };
-    
-    const extractAlias = (value: string): string => {
-        const index = value.indexOf("@");
-        return value.substring(index);
-    };
-    
-    const getUser = async (
-        authToken: AuthToken,
-        alias: string
-    ): Promise<User | null> => {
-        // TODO: Replace with the result of calling server
-        return FakeData.instance.findUserByAlias(alias);
-    };
+  const listener: UserNavigationView = {
+    displayErrorMessage: displayErrorMessage,
+    setDisplayedUser: setDisplayedUser,
+  };
 
-    return {
-        navigateToItem: navigateToUser
-    };
+  const [presenter] = useState(new UserNavigationPresenter(listener));
+
+  const navigateToUser = (e: React.MouseEvent) =>
+    presenter.navigateToUser(currentUser, authToken, e);
+
+  return {
+    navigateToItem: navigateToUser,
+  };
 };
 
 export default useUserNavigation;
