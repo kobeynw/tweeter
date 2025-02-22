@@ -1,8 +1,8 @@
 import { AuthToken, User } from "tweeter-shared";
 import { UserService } from "../model/service/UserService";
+import { Presenter, View } from "./Presenter";
 
-export interface UserInfoView {
-  displayErrorMessage: (message: string) => void;
+export interface UserInfoView extends View {
   displayInfoMessage: (
     message: string,
     duration: number,
@@ -17,15 +17,14 @@ export interface UserInfoView {
   setFollowerCount: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export class UserInfoPresenter {
+export class UserInfoPresenter extends Presenter<UserInfoView> {
   private userService: UserService;
-  private _view: UserInfoView;
   private _isFollower;
   private _isLoading;
 
   public constructor(view: UserInfoView) {
+    super(view);
     this.userService = new UserService();
-    this._view = view;
     this._isFollower = false;
     this._isLoading = false;
   }
@@ -35,7 +34,7 @@ export class UserInfoPresenter {
     currentUser: User,
     displayedUser: User
   ) {
-    try {
+    this.doFailureReportingOperation(async () => {
       if (currentUser === displayedUser) {
         this.isFollower = false;
       } else {
@@ -45,35 +44,23 @@ export class UserInfoPresenter {
           displayedUser!
         );
       }
-    } catch (error) {
-      this.view.displayErrorMessage(
-        `Failed to determine follower status because of exception: ${error}`
-      );
-    }
+    }, "determine follower status");
   }
 
   public async setNumbFollowees(authToken: AuthToken, displayedUser: User) {
-    try {
+    this.doFailureReportingOperation(async () => {
       this.view.setFolloweeCount(
         await this.userService.getFolloweeCount(authToken, displayedUser)
       );
-    } catch (error) {
-      this.view.displayErrorMessage(
-        `Failed to get followees count because of exception: ${error}`
-      );
-    }
+    }, "get followees count");
   }
 
   public async setNumbFollowers(authToken: AuthToken, displayedUser: User) {
-    try {
+    this.doFailureReportingOperation(async () => {
       this.view.setFollowerCount(
         await this.userService.getFollowerCount(authToken, displayedUser)
       );
-    } catch (error) {
-      this.view.displayErrorMessage(
-        `Failed to get followers count because of exception: ${error}`
-      );
-    }
+    }, "get followers count");
   }
 
   public switchToLoggedInUser = (event: React.MouseEvent): void => {
@@ -137,10 +124,6 @@ export class UserInfoPresenter {
       this.view.clearLastInfoMessage();
       this.isLoading = false;
     }
-  }
-
-  private get view() {
-    return this._view;
   }
 
   public get isFollower() {
