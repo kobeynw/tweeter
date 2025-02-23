@@ -1,30 +1,15 @@
-import { UserService } from "../model/service/UserService";
-import { User, AuthToken } from "tweeter-shared";
 import { Buffer } from "buffer";
+import { AuthPresenter, AuthView } from "./AuthPresenter";
 
-export interface RegisterView {
-  displayErrorMessage: (message: string) => void;
-  updateUserInfo: (
-    currentUser: User,
-    displayedUser: User | null,
-    authToken: AuthToken,
-    rememberMe: boolean
-  ) => void;
-  navigate: (path: string) => void;
+export interface RegisterView extends AuthView {
   setImageBytes: React.Dispatch<React.SetStateAction<Uint8Array>>;
   setImageUrl: React.Dispatch<React.SetStateAction<string>>;
   setImageFileExtension: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export class RegisterPresenter {
-  private userService: UserService;
-  private _isLoading: boolean;
-  private _view: RegisterView;
-
+export class RegisterPresenter extends AuthPresenter<RegisterView> {
   public constructor(view: RegisterView) {
-    this.userService = new UserService();
-    this._view = view;
-    this._isLoading = false;
+    super(view);
   }
 
   async doRegister(
@@ -36,10 +21,8 @@ export class RegisterPresenter {
     imageFileExtension: string,
     rememberMe: boolean
   ) {
-    try {
-      this.isLoading = true;
-
-      const [user, authToken] = await this.userService.register(
+    this.doAuthFailureReportingOperation(async () => {
+      const [user, authToken] = await this.service.register(
         firstName,
         lastName,
         alias,
@@ -50,13 +33,7 @@ export class RegisterPresenter {
 
       this.view.updateUserInfo(user, user, authToken, rememberMe);
       this.view.navigate("/");
-    } catch (error) {
-      this.view.displayErrorMessage(
-        `Failed to register user because of exception: ${error}`
-      );
-    } finally {
-      this.isLoading = false;
-    }
+    }, "register user");
   }
 
   public handleImageFile(file: File | undefined) {
@@ -94,16 +71,4 @@ export class RegisterPresenter {
   private getFileExtension = (file: File): string | undefined => {
     return file.name.split(".").pop();
   };
-
-  protected get view() {
-    return this._view;
-  }
-
-  public get isLoading() {
-    return this._isLoading;
-  }
-
-  protected set isLoading(value: boolean) {
-    this._isLoading = value;
-  }
 }
