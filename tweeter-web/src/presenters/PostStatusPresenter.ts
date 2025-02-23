@@ -1,8 +1,8 @@
 import { AuthToken, Status, User } from "tweeter-shared";
 import { StatusService } from "../model/service/StatusService";
+import { Presenter, View } from "./Presenter";
 
-export interface PostStatusView {
-  displayErrorMessage: (message: string) => void;
+export interface PostStatusView extends View {
   displayInfoMessage: (
     message: string,
     duration: number,
@@ -12,14 +12,13 @@ export interface PostStatusView {
   setPost: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export class PostStatusPresenter {
+export class PostStatusPresenter extends Presenter<PostStatusView> {
   private statusService: StatusService;
-  private _view: PostStatusView;
   private _isLoading: boolean;
 
   public constructor(view: PostStatusView) {
+    super(view);
     this.statusService = new StatusService();
-    this._view = view;
     this._isLoading = false;
   }
 
@@ -49,10 +48,6 @@ export class PostStatusPresenter {
       this.view.clearLastInfoMessage();
       this.isLoading = false;
     }
-  }
-
-  private get view() {
-    return this._view;
   }
 
   public get isLoading() {

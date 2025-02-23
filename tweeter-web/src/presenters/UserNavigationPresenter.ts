@@ -1,7 +1,8 @@
 import { AuthToken, User } from "tweeter-shared";
 import { UserService } from "../model/service/UserService";
+import { Presenter, View } from "./Presenter";
 
-export interface UserNavigationView {
+export interface UserNavigationView extends View {
   displayErrorMessage: (
     message: string,
     bootstrapClasses?: string | undefined
@@ -9,13 +10,12 @@ export interface UserNavigationView {
   setDisplayedUser: (user: User) => void;
 }
 
-export class UserNavigationPresenter {
+export class UserNavigationPresenter extends Presenter<UserNavigationView> {
   private userService: UserService;
-  private _view: UserNavigationView;
 
   public constructor(view: UserNavigationView) {
+    super(view);
     this.userService = new UserService();
-    this._view = view;
   }
 
   public async navigateToUser(
@@ -48,8 +48,4 @@ export class UserNavigationPresenter {
     const index = value.indexOf("@");
     return value.substring(index);
   };
-
-  private get view() {
-    return this._view;
-  }
 }
