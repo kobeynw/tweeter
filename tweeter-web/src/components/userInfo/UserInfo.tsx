@@ -93,7 +93,11 @@ const UserInfo = () => {
                       type="submit"
                       style={{ width: "6em" }}
                       onClick={(event) =>
-                        presenter.unfollowDisplayedUser(event)
+                        presenter.unfollowDisplayedUser(
+                          displayedUser,
+                          authToken,
+                          event
+                        )
                       }
                     >
                       {presenter.isLoading ? (
@@ -112,7 +116,13 @@ const UserInfo = () => {
                       className="btn btn-md btn-primary me-1"
                       type="submit"
                       style={{ width: "6em" }}
-                      onClick={(event) => presenter.followDisplayedUser(event)}
+                      onClick={(event) =>
+                        presenter.followDisplayedUser(
+                          displayedUser,
+                          authToken,
+                          event
+                        )
+                      }
                     >
                       {presenter.isLoading ? (
                         <span
