@@ -7,7 +7,11 @@ import {
   PostStatusView,
 } from "../../presenters/PostStatusPresenter";
 
-const PostStatus = () => {
+interface Props {
+  presenter?: PostStatusPresenter;
+}
+
+const PostStatus = (props: Props) => {
   const { displayErrorMessage, displayInfoMessage, clearLastInfoMessage } =
     useToastListener();
 
@@ -21,11 +25,18 @@ const PostStatus = () => {
     setPost: setPost,
   };
 
-  const [presenter] = useState(new PostStatusPresenter(listener));
+  const [presenter] = useState(
+    props.presenter ?? new PostStatusPresenter(listener)
+  );
 
   const clearPost = (event: React.MouseEvent) => {
     event.preventDefault();
     setPost("");
+  };
+
+  const submitPost = (event: React.MouseEvent) => {
+    event.preventDefault();
+    presenter.submitPost(currentUser, authToken, post);
   };
 
   const checkButtonStatus: () => boolean = () => {
@@ -39,6 +50,7 @@ const PostStatus = () => {
           <textarea
             className="form-control"
             id="postStatusTextArea"
+            aria-label="post status text field"
             rows={10}
             placeholder="What's on your mind?"
             value={post}
@@ -51,12 +63,11 @@ const PostStatus = () => {
           <button
             id="postStatusButton"
             className="btn btn-md btn-primary me-1"
+            aria-label="post status"
             type="button"
             disabled={checkButtonStatus()}
             style={{ width: "8em" }}
-            onClick={(event) =>
-              presenter.submitPost(currentUser, authToken, post, event)
-            }
+            onClick={(event) => submitPost(event)}
           >
             {presenter.isLoading ? (
               <span
@@ -71,6 +82,7 @@ const PostStatus = () => {
           <button
             id="clearStatusButton"
             className="btn btn-md btn-secondary"
+            aria-label="clear"
             type="button"
             disabled={checkButtonStatus()}
             onClick={(event) => clearPost(event)}

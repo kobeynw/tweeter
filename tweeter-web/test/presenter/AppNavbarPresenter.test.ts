@@ -5,7 +5,6 @@ import {
 } from "../../src/presenters/AppNavbarPresenter";
 import {
   anything,
-  capture,
   instance,
   mock,
   spy,
@@ -46,16 +45,6 @@ describe("AppNavbarPresenter", () => {
   it("calls logout on the user service with the correct authtoken", async () => {
     await appNavbarPresenter.logOut(authToken);
     verify(mockUserService.logout(authToken)).once();
-
-    /*
-    ALTERNATE FORM WITH ARG CAPTURE:
-
-    await appNavbarPresenter.logOut(authToken);
-    verify(mockUserService.logout(anything())).once();
-
-    let [capturedAuthToken] = capture(mockUserService.logout).last();
-    expect(capturedAuthToken).toEqual(authToken);
-    */
   });
 
   it("tells the view to clear the last info message, clear the user info, and navigate to the login page [SUCCESS]", async () => {
@@ -71,11 +60,6 @@ describe("AppNavbarPresenter", () => {
     when(mockUserService.logout(authToken)).thenThrow(error);
 
     await appNavbarPresenter.logOut(authToken);
-
-    let [capturedErrorMessage] = capture(
-      mockAppNavbarView.displayErrorMessage
-    ).last();
-    console.log(capturedErrorMessage);
 
     verify(
       mockAppNavbarView.displayErrorMessage(

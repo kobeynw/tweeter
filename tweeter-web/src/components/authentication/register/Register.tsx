@@ -11,11 +11,7 @@ import {
   RegisterPresenter,
 } from "../../../presenters/RegisterPresenter";
 
-interface Props {
-  presenterGenerator: (view: RegisterView) => RegisterPresenter;
-}
-
-const Register = (props: Props) => {
+const Register = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [alias, setAlias] = useState("");
@@ -55,7 +51,7 @@ const Register = (props: Props) => {
     setImageFileExtension: setImageFileExtension,
   };
 
-  const [presenter] = useState(props.presenterGenerator(listener));
+  const [presenter] = useState(new RegisterPresenter(listener));
 
   const doRegister = async () => {
     presenter.doRegister(

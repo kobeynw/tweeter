@@ -13,25 +13,26 @@ export interface PostStatusView extends View {
 }
 
 export class PostStatusPresenter extends Presenter<PostStatusView> {
-  private statusService: StatusService;
+  private _statusService: StatusService;
   private _isLoading: boolean;
 
   public constructor(view: PostStatusView) {
     super(view);
-    this.statusService = new StatusService();
+    this._statusService = new StatusService();
     this._isLoading = false;
+  }
+
+  public get statusService() {
+    return this._statusService;
   }
 
   public async submitPost(
     currentUser: User | null,
     authToken: AuthToken | null,
-    post: string,
-    event: React.MouseEvent
+    post: string
   ) {
-    event.preventDefault();
-
     try {
-      this.isLoading = true;
+      this._isLoading = true;
       this.view.displayInfoMessage("Posting status...", 0, undefined);
 
       const status = new Status(post, currentUser!, Date.now());
@@ -42,11 +43,13 @@ export class PostStatusPresenter extends Presenter<PostStatusView> {
       this.view.displayInfoMessage("Status posted!", 2000, undefined);
     } catch (error) {
       this.view.displayErrorMessage(
-        `Failed to post the status because of exception: ${error}`
+        `Failed to post the status because of exception: ${
+          (error as Error).message
+        }`
       );
     } finally {
       this.view.clearLastInfoMessage();
-      this.isLoading = false;
+      this._isLoading = false;
     }
   }
 
@@ -54,7 +57,7 @@ export class PostStatusPresenter extends Presenter<PostStatusView> {
     return this._isLoading;
   }
 
-  private set isLoading(value: boolean) {
+  public set isLoading(value: boolean) {
     this._isLoading = value;
   }
 }
