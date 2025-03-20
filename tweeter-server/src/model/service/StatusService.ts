@@ -1,23 +1,14 @@
-import { AuthToken, Status, FakeData, PagedStatusItemRequest } from "tweeter-shared";
-import { Service } from "./Service";
+import { AuthToken, Status, FakeData, StatusDto } from "tweeter-shared";
 
-export class StatusService extends Service {
+export class StatusService {
   public async loadMoreFeedItems(
-    authToken: AuthToken,
+    token: string,
     userAlias: string,
     pageSize: number,
-    lastItem: Status | null
-  ): Promise<[Status[], boolean]> {
+    lastItem: StatusDto | null
+  ): Promise<[StatusDto[], boolean]> {
     // TODO: Replace with the result of calling server
-    const request: PagedStatusItemRequest = {
-      token: authToken.token,
-      userAlias: userAlias,
-      pageSize: pageSize,
-      lastItem: lastItem === null ? null : lastItem.dto,
-    };
-    const response = await Service.serverFacade.getMoreFeedItems(request);
-
-    return response;
+    return this.getFakeData(pageSize, lastItem);
   }
 
   public async loadMoreStoryItems(
@@ -35,5 +26,18 @@ export class StatusService extends Service {
     await new Promise((f) => setTimeout(f, 2000));
 
     // TODO: Call the server to post the status
+  }
+
+  private async getFakeData(
+    pageSize: number,
+    lastItem: StatusDto | null
+  ): Promise<[StatusDto[], boolean]> {
+    const [items, hasMore] = FakeData.instance.getPageOfStatuses(
+      Status.fromDto(lastItem),
+      pageSize
+    );
+    const dtos = items.map((status) => status.dto);
+
+    return [dtos, hasMore];
   }
 }
