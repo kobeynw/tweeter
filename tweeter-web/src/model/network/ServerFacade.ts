@@ -3,6 +3,8 @@ import {
   PagedStatusItemResponse,
   PagedUserItemRequest,
   PagedUserItemResponse,
+  PostStatusRequest,
+  PostStatusResponse,
   Status,
   User,
   UserDto,
@@ -116,6 +118,20 @@ export class ServerFacade {
         return [items, response.hasMore];
       }
     } else {
+      console.error(response);
+      throw new Error(
+        response.message !== null ? response.message : "TweeterResponse message error"
+      );
+    }
+  }
+
+  public async postStatus(request: PostStatusRequest): Promise<void> {
+    const response = await this.clientCommunicator.doPost<PostStatusRequest, PostStatusResponse>(
+      request,
+      "/status/submit"
+    );
+
+    if (!response.success) {
       console.error(response);
       throw new Error(
         response.message !== null ? response.message : "TweeterResponse message error"
