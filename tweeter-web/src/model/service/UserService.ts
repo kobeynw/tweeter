@@ -7,6 +7,7 @@ import {
   User,
   IsFollowerRequest,
   FollowCountRequest,
+  FollowRequest,
 } from "tweeter-shared";
 import { Buffer } from "buffer";
 import { Service } from "./Service";
@@ -91,30 +92,26 @@ export class UserService extends Service {
     authToken: AuthToken,
     userToFollow: User
   ): Promise<[followerCount: number, followeeCount: number]> {
-    // Pause so we can see the follow message. Remove when connected to the server
-    await new Promise((f) => setTimeout(f, 2000));
+    const request: FollowRequest = {
+      token: authToken.token,
+      user: userToFollow.dto,
+    };
+    const response = await Service.serverFacade.follow(request);
 
-    // TODO: Call the server
-
-    const followerCount = await this.getFollowerCount(authToken, userToFollow);
-    const followeeCount = await this.getFolloweeCount(authToken, userToFollow);
-
-    return [followerCount, followeeCount];
+    return response;
   }
 
   public async unfollow(
     authToken: AuthToken,
     userToUnfollow: User
   ): Promise<[followerCount: number, followeeCount: number]> {
-    // Pause so we can see the unfollow message. Remove when connected to the server
-    await new Promise((f) => setTimeout(f, 2000));
+    const request: FollowRequest = {
+      token: authToken.token,
+      user: userToUnfollow.dto,
+    };
+    const response = await Service.serverFacade.unfollow(request);
 
-    // TODO: Call the server
-
-    const followerCount = await this.getFollowerCount(authToken, userToUnfollow);
-    const followeeCount = await this.getFolloweeCount(authToken, userToUnfollow);
-
-    return [followerCount, followeeCount];
+    return response;
   }
 
   public async getUser(authToken: AuthToken, alias: string): Promise<User | null> {
