@@ -17,6 +17,8 @@ import {
   RegisterResponse,
   LogoutRequest,
   LogoutResponse,
+  IsFollowerRequest,
+  IsFollowerResponse,
 } from "tweeter-shared";
 import { ClientCommunicator } from "./ClientCommunicator";
 
@@ -211,6 +213,23 @@ export class ServerFacade {
 
     // Handle errors
     if (!response.success) {
+      console.error(response);
+      throw new Error(
+        response.message !== null ? response.message : "TweeterResponse message error"
+      );
+    }
+  }
+
+  public async getIsFollower(request: IsFollowerRequest): Promise<boolean> {
+    const response = await this.clientCommunicator.doPost<IsFollowerRequest, IsFollowerResponse>(
+      request,
+      "/follower/is"
+    );
+
+    // Handle errors
+    if (response.success) {
+      return response.isFollower;
+    } else {
       console.error(response);
       throw new Error(
         response.message !== null ? response.message : "TweeterResponse message error"
