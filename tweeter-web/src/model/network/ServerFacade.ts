@@ -13,6 +13,8 @@ import {
   LoginRequest,
   LoginResponse,
   AuthToken,
+  RegisterRequest,
+  RegisterResponse,
 } from "tweeter-shared";
 import { ClientCommunicator } from "./ClientCommunicator";
 
@@ -147,6 +149,34 @@ export class ServerFacade {
     const response = await this.clientCommunicator.doPost<LoginRequest, LoginResponse>(
       request,
       "/user/login"
+    );
+
+    // Handle errors
+    if (response.success) {
+      const userItem: User | null = response.user ? (User.fromDto(response.user) as User) : null;
+      const tokenItem: AuthToken | null = response.authToken
+        ? (AuthToken.fromDto(response.authToken) as AuthToken)
+        : null;
+
+      if (userItem == null) {
+        throw new Error(`No user found`);
+      } else if (tokenItem == null) {
+        throw new Error(`No AuthToken found`);
+      } else {
+        return [userItem, tokenItem];
+      }
+    } else {
+      console.error(response);
+      throw new Error(
+        response.message !== null ? response.message : "TweeterResponse message error"
+      );
+    }
+  }
+
+  public async register(request: RegisterRequest): Promise<[User, AuthToken]> {
+    const response = await this.clientCommunicator.doPost<RegisterRequest, RegisterResponse>(
+      request,
+      "/user/register"
     );
 
     // Handle errors
