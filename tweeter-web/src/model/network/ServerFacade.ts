@@ -19,6 +19,8 @@ import {
   LogoutResponse,
   IsFollowerRequest,
   IsFollowerResponse,
+  FollowCountRequest,
+  FollowCountResponse,
 } from "tweeter-shared";
 import { ClientCommunicator } from "./ClientCommunicator";
 
@@ -229,6 +231,40 @@ export class ServerFacade {
     // Handle errors
     if (response.success) {
       return response.isFollower;
+    } else {
+      console.error(response);
+      throw new Error(
+        response.message !== null ? response.message : "TweeterResponse message error"
+      );
+    }
+  }
+
+  public async getFolloweeCount(request: FollowCountRequest): Promise<number> {
+    const response = await this.clientCommunicator.doPost<FollowCountRequest, FollowCountResponse>(
+      request,
+      "/followee/count"
+    );
+
+    // Handle errors
+    if (response.success) {
+      return response.followCount;
+    } else {
+      console.error(response);
+      throw new Error(
+        response.message !== null ? response.message : "TweeterResponse message error"
+      );
+    }
+  }
+
+  public async getFollowerCount(request: FollowCountRequest): Promise<number> {
+    const response = await this.clientCommunicator.doPost<FollowCountRequest, FollowCountResponse>(
+      request,
+      "/follower/count"
+    );
+
+    // Handle errors
+    if (response.success) {
+      return response.followCount;
     } else {
       console.error(response);
       throw new Error(

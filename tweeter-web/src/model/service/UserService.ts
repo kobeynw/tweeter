@@ -6,6 +6,7 @@ import {
   LogoutRequest,
   User,
   IsFollowerRequest,
+  FollowCountRequest,
 } from "tweeter-shared";
 import { Buffer } from "buffer";
 import { Service } from "./Service";
@@ -67,13 +68,23 @@ export class UserService extends Service {
   }
 
   public async getFolloweeCount(authToken: AuthToken, user: User): Promise<number> {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.getFolloweeCount(user.alias);
+    const request: FollowCountRequest = {
+      token: authToken.token,
+      user: user.dto,
+    };
+    const response = await Service.serverFacade.getFolloweeCount(request);
+
+    return response;
   }
 
   public async getFollowerCount(authToken: AuthToken, user: User): Promise<number> {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.getFollowerCount(user.alias);
+    const request: FollowCountRequest = {
+      token: authToken.token,
+      user: user.dto,
+    };
+    const response = await Service.serverFacade.getFollowerCount(request);
+
+    return response;
   }
 
   public async follow(
