@@ -15,6 +15,8 @@ import {
   AuthToken,
   RegisterRequest,
   RegisterResponse,
+  LogoutRequest,
+  LogoutResponse,
 } from "tweeter-shared";
 import { ClientCommunicator } from "./ClientCommunicator";
 
@@ -32,7 +34,7 @@ export class ServerFacade {
     // Convert the UserDto array returned by ClientCommunicator to a User array
     const items: User[] | null =
       response.success && response.items
-        ? response.items.map((dto) => User.fromDto(dto) as User)
+        ? response.items.map((dto: UserDto) => User.fromDto(dto) as User)
         : null;
 
     // Handle errors
@@ -59,7 +61,7 @@ export class ServerFacade {
     // Convert the UserDto array returned by ClientCommunicator to a User array
     const items: User[] | null =
       response.success && response.items
-        ? response.items.map((dto) => User.fromDto(dto) as User)
+        ? response.items.map((dto: UserDto) => User.fromDto(dto) as User)
         : null;
 
     // Handle errors
@@ -86,7 +88,7 @@ export class ServerFacade {
     // Convert the StatusDto array returned by ClientCommunicator to a Status array
     const items: Status[] | null =
       response.success && response.items
-        ? response.items.map((dto) => Status.fromDto(dto) as Status)
+        ? response.items.map((dto: StatusDto) => Status.fromDto(dto) as Status)
         : null;
 
     // Handle errors
@@ -113,7 +115,7 @@ export class ServerFacade {
     // Convert the StatusDto array returned by ClientCommunicator to a Status array
     const items: Status[] | null =
       response.success && response.items
-        ? response.items.map((dto) => Status.fromDto(dto) as Status)
+        ? response.items.map((dto: StatusDto) => Status.fromDto(dto) as Status)
         : null;
 
     // Handle errors
@@ -194,6 +196,21 @@ export class ServerFacade {
         return [userItem, tokenItem];
       }
     } else {
+      console.error(response);
+      throw new Error(
+        response.message !== null ? response.message : "TweeterResponse message error"
+      );
+    }
+  }
+
+  public async logout(request: LogoutRequest): Promise<void> {
+    const response = await this.clientCommunicator.doPost<LogoutRequest, LogoutResponse>(
+      request,
+      "/user/logout"
+    );
+
+    // Handle errors
+    if (!response.success) {
       console.error(response);
       throw new Error(
         response.message !== null ? response.message : "TweeterResponse message error"

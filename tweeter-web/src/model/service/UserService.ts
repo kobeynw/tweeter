@@ -1,4 +1,11 @@
-import { AuthToken, FakeData, LoginRequest, RegisterRequest, User } from "tweeter-shared";
+import {
+  AuthToken,
+  FakeData,
+  LoginRequest,
+  RegisterRequest,
+  LogoutRequest,
+  User,
+} from "tweeter-shared";
 import { Buffer } from "buffer";
 import { Service } from "./Service";
 
@@ -37,8 +44,10 @@ export class UserService extends Service {
   }
 
   public async logout(authToken: AuthToken): Promise<void> {
-    // Pause so we can see the logging out message. Delete when the call to the server is implemented.
-    await new Promise((res) => setTimeout(res, 1000));
+    const request: LogoutRequest = {
+      token: authToken.token,
+    };
+    await Service.serverFacade.logout(request);
   }
 
   public async getIsFollowerStatus(
