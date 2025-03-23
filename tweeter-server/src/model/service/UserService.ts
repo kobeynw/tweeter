@@ -92,8 +92,10 @@ export class UserService {
     return [followerCount, followeeCount];
   }
 
-  public async getUser(token: string, alias: string): Promise<User | null> {
+  public async getUser(token: string, alias: string): Promise<UserDto | null> {
     // TODO: Replace with the result of calling server
-    return FakeData.instance.findUserByAlias(alias);
+    const user = FakeData.instance.findUserByAlias(alias);
+
+    return user === null ? null : user.dto;
   }
 }

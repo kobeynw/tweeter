@@ -23,6 +23,8 @@ import {
   FollowCountResponse,
   FollowRequest,
   FollowResponse,
+  GetUserRequest,
+  GetUserResponse,
 } from "tweeter-shared";
 import { ClientCommunicator } from "./ClientCommunicator";
 
@@ -305,6 +307,23 @@ export class ServerFacade {
     // Handle Errors
     if (response.success) {
       return [response.followerCount, response.followeeCount];
+    } else {
+      console.error(response);
+      throw new Error(
+        response.message !== null ? response.message : "TweeterResponse message error"
+      );
+    }
+  }
+
+  public async getUser(request: GetUserRequest): Promise<User | null> {
+    const response = await this.clientCommunicator.doPost<GetUserRequest, GetUserResponse>(
+      request,
+      "/user/get"
+    );
+
+    // Handle Errors
+    if (response.success) {
+      return response.user == null ? null : User.fromDto(response.user);
     } else {
       console.error(response);
       throw new Error(

@@ -24,6 +24,7 @@ export type { LogoutRequest } from "./model/net/request/LogoutRequest";
 export type { IsFollowerRequest } from "./model/net/request/IsFollowerRequest";
 export type { FollowCountRequest } from "./model/net/request/FollowCountRequest";
 export type { FollowRequest } from "./model/net/request/FollowRequest";
+export type { GetUserRequest } from "./model/net/request/GetUserRequest";
 
 // Responses
 export type { TweeterResponse } from "./model/net/response/TweeterResponse";
@@ -36,6 +37,7 @@ export type { LogoutResponse } from "./model/net/response/LogoutResponse";
 export type { IsFollowerResponse } from "./model/net/response/IsFollowerResponse";
 export type { FollowCountResponse } from "./model/net/response/FollowCountResponse";
 export type { FollowResponse } from "./model/net/response/FollowResponse";
+export type { GetUserResponse } from "./model/net/response/GetUserResponse";
 
 // Other
 export { FakeData } from "./util/FakeData";
